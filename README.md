@@ -17,6 +17,10 @@ Each agent lives in its own folder. Add its code, dependencies, and setup instru
 
 - [ ] 01 - [Basic Agent](01-basic-agent/): Practice tool calling and model selection.
 
-- [ ] 02 - Data Analysis Agent: Analyze files using memory and a system prompt.
+- [ ] 02 - Data Analysis Assistant Agent: Agent with read_csv tool
+  - Add system prompt
+  - Add model selection
+  - Stream response (chunks)
+  - Automatic tool compiling
 
-- [ ] 03 - Framework Agent: Build an agent with LangChain or LangGraph.
+- [ ] 03 - Framework Agent: Remake a previous agent with LangChain or LangGraph.

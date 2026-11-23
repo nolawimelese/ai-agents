@@ -1,7 +1,34 @@
 import requests, sys
 
 from openai import OpenAI
+from openai.types.chat import ChatCompletionToolParam
 
+def add(a, b):
+    return a + b
+
+TOOL_REGISTRY = {
+    "add": add
+}
+
+# added type to make pylance happy
+tools: list[ChatCompletionToolParam] = [
+    {
+        "type": "function",
+        "function": {
+            "name": "add",
+            "description": "Add two numbers",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "a": {"type": "number"},
+                    "b": {"type": "number"}
+                },
+                "required": ["a", "b"],
+                "additionalProperties": False
+            }
+        }
+    }
+]
 
 def main():
 
@@ -17,10 +44,14 @@ def main():
     )
 
     response = client.chat.completions.create(
-        model="qwen3.5-0.8b",
-        messages=[{"role": "user", "content": prompt}]
+    model="qwen3.5-0.8b",
+    messages=[{"role": "user", "content": prompt}],
+    tools=tools,
+    tool_choice="auto",
     )
-    print(response.choices[0].message.content)
+
+    message = response.choices[0].message
+    print(message.content)
 
 
 if __name__ == "__main__":
