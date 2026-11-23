@@ -1,6 +1,6 @@
 # AI Agents
 
-My collection of AI agents.
+My collection of AI agents. Each folder houses an agent, with it's own dependencies and setup instructions.
 
 ## Repository Structure
 
@@ -10,8 +10,6 @@ ai-agents/
 |-- .gitignore
 `-- README.md
 ```
-
-Each agent lives in its own folder. Add its code, dependencies, and setup instructions there as it develops.
 
 ## Roadmap
 

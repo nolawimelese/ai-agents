@@ -1,4 +1,5 @@
-import requests, sys
+import requests, sys, json
+from typing import Any
 
 from openai import OpenAI
 from openai.types.chat import ChatCompletionToolParam
@@ -43,15 +44,51 @@ def main():
         max_retries=0,
     )
 
-    response = client.chat.completions.create(
-    model="qwen3.5-0.8b",
-    messages=[{"role": "user", "content": prompt}],
-    tools=tools,
-    tool_choice="auto",
-    )
+    # model loop
+    # we get 10 total turns to do a task
 
-    message = response.choices[0].message
-    print(message.content)
+    messages: list[Any] = [{"role": "user", "content": prompt}]
+
+    for _ in range(10):
+        response = client.chat.completions.create(
+        model="qwen3.5-0.8b",
+        messages = messages,
+        tools=tools,
+        tool_choice="auto",
+        )
+
+        message = response.choices[0].message
+
+        # respond if no tool request
+        if not message.tool_calls:
+            print(message.content)
+            break
+        # add additional 
+        messages.append(message.model_dump(exclude_none=True))
+
+        for tool_call in message.tool_calls:
+
+            # tool call should be a function only
+            if tool_call.type != "function":
+                raise ValueError("Expected a function tool call")
+
+            name = tool_call.function.name
+
+            print(f"Using {name} tool")
+
+            # convert to python dict
+            arguments = json.loads(tool_call.function.arguments)
+
+            function = TOOL_REGISTRY[name]
+
+            # unpack args and call the tool (function)
+            result = function(**arguments)
+
+            messages.append({
+            "role": "tool",
+            "tool_call_id": tool_call.id,
+            "content": json.dumps(result),
+            })
 
 
 if __name__ == "__main__":
